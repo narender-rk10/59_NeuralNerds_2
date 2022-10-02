@@ -12,6 +12,12 @@ import io
 crop_recommendation_model_path = 'Models/rfmodel.pickle'
 crop_recommendation_model = pickle.load(open(crop_recommendation_model_path, 'rb'))
 
+data_1 = pd.read_csv("Data/datafile (1).csv")
+data_2 = pd.read_csv("Data/datafile (2).csv")
+data_3 = pd.read_csv("Data/datafile (3).csv")
+data_ = pd.read_csv("Data/datafile.csv")
+produce = pd.read_csv("Data/produce.csv")
+
 def weather_fetch(city_name):
     api_key = config.weather_api_key
     base_url = "http://api.openweathermap.org/data/2.5/weather?"
@@ -76,6 +82,50 @@ def crop_prediction():
 
             return render_template('try_again.html', title=title)
 
+ 
+@ app.route('/crop-predict', methods=['POST'])
+def crop_prediction():
+    title = 'MyPlant - Crop Recommendation'
+
+    if request.method == 'POST':
+        N = int(request.form['nitrogen'])
+        P = int(request.form['phosphorous'])
+        K = int(request.form['pottasium'])
+        ph = float(request.form['ph'])
+        rainfall = float(request.form['rainfall'])
+        # state = request.form.get("stt")
+        city = request.form.get("city")
+
+        if weather_fetch(city) != None:
+            temperature, humidity = weather_fetch(city)
+            data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
+            my_prediction = crop_recommendation_model.predict(data)
+            final_prediction = my_prediction[0].capitalize()
+            print(final_prediction)
+            states = list(data_1[data_1["Crop"] == final_prediction]["State"])
+            culti_cost = list(data_1[data_1["Crop"] == final_prediction]["Cost of Cultivation (`/Hectare) C2"])
+            yield_quintal=list(data_1[data_1["Crop"] == final_prediction]["Yield (Quintal/ Hectare) "])
+#states=states, culti_cost=culti_cost,  yield_quintal = yield_quintal,
+            return render_template('crop-result.html', prediction=final_prediction, title=title)
+
+        else:
+
+            return render_template('try_again.html', title=title)
+
+@ app.route('/crop-calc', methods=['POST', 'GET'])
+def crop_calc():
+    title = 'MyPlant - Crop Calc'
+
+    if request.method == 'POST':
+        crop= request.form['crop']
+        states = list(data_1[data_1["Crop"] == crop]["State"])
+        culti_cost = list(data_1[data_1["Crop"] == crop]["Cost of Cultivation (`/Hectare) C2"])
+        yield_quintal = list(data_1[data_1["Crop"] == crop]["Yield (Quintal/ Hectare) "])
+        mapped = zip(states, culti_cost, yield_quintal)
+        return render_template('crop-calc-result.html', data=mapped, title=title)
+    if request.method == 'GET':
+        return render_template('crop-calc.html', title=title)
+    
 @ app.route('/fertilizer-predict', methods=['POST'])
 def fert_recommend():
     title = 'MyPlant - Fertilizer Suggestion'
