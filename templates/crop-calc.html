@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+{% block body %}
+<br /><br />
+
+<br />
+
+<div class="container">
+    <h2>
+        <center>
+            <img src="/static/undraw_environment.svg" height="300px" width="500px"></img>
+        </center>
+        <br />
+        <b>Find out the most suitable crop to grow in your farm</b>
+    </h2>
+    <form method="POST" action="{{ url_for('crop_calc') }}">
+        <div class="form-group">
+            <label for="Crop" style="font-size: 17px"><b>Crop</b></label>
+            <input type="text" class="form-control" id="Nitrogen" name="crop"
+                placeholder="Enter the crop name" style="font-weight: bold" required />
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-info"
+                style="color: black; font-weight: bold; width: 130px; height:50px; border-radius:12px; font-size: 21px;">
+                Predict
+            </button>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock %}

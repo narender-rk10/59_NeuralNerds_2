@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+ {% block body %}
+
+<div class="container py-2 mx-auto my-50 h-10 " style="margin: 12rem;">
+    <div class="row">
+        <div class="col-sm py-2 py-md-3">
+            <div class="card card-body" style="justify-content: center;">
+                <table>
+                    <tr>
+                        <th>State:</th>
+                        <th>Cultivation:</th>
+                        <th>Yield:</th>
+                    </tr>
+                    {% for day in data %}
+                    <tr>
+                        <td>{{ day[0] }}</td>
+                        <td>{{ day[1] }}</td>
+                        <td>{{ day[2] }}</td>
+                    </tr>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
